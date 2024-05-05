@@ -18,8 +18,12 @@ int main(int argc, char *argv[])
             break;
         }
     }
-    MainWindow w;
+    ChessBoard plateau1;
+    MainWindow w(nullptr, &plateau1);
+
+    plateau1.debugChessBoard();
     w.resetBoard();
+
     w.show();
     return a.exec();
 }

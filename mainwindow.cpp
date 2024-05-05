@@ -1,9 +1,9 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(QWidget *parent, ChessBoard* plateau)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    , ui(new Ui::MainWindow), plateau_(plateau)
 {
     ui->setupUi(this);
 
@@ -63,17 +63,65 @@ void MainWindow::resetBoard(){
             QPushButton* boutton = getButton((ligne - 1)*8+colonne);
 
             connect(boutton, &QPushButton::clicked, this, &MainWindow::onButtonClicked);
-            boutton->setText(QString(""));
+            boutton->setFont(QFont("Arial", 60));
+            boutton->setText(QString(getCharButton(boutton)));
 
             setBoxColor(boutton);
         }
     }
 }
 
-void MainWindow::highlightArray(QPushButton* button, const std::vector<std::pair<int, int>> liste){
+QChar MainWindow::getCharButton(QPushButton *button) {
+    std::pair<int, int> coordonnees = getCoordinate(button);
+    switch (plateau_->getPieceAt(coordonnees)->getPieceType()) {
+    case TypePiece::Vide:
+        return (plateau_->getPieceAt(coordonnees)->getPieceCouleur() == Couleur::Blanc) ? QChar(0) : QChar(0);
+        break;
+    case TypePiece::Cavalier:
+        return (plateau_->getPieceAt(coordonnees)->getPieceCouleur() == Couleur::Blanc) ? QChar(0x2658) : QChar(0x265E);
+        break;
+    case TypePiece::Fou:
+        return (plateau_->getPieceAt(coordonnees)->getPieceCouleur() == Couleur::Blanc) ? QChar(0x2657) : QChar(0x265D);
+        break;
+    case TypePiece::Pion:
+        return (plateau_->getPieceAt(coordonnees)->getPieceCouleur() == Couleur::Blanc) ? QChar(0x2659) : QChar(0x265F);
+        break;
+    case TypePiece::Reine:
+        return (plateau_->getPieceAt(coordonnees)->getPieceCouleur() == Couleur::Blanc) ? QChar(0x2655) : QChar(0x265B);
+        break;
+    case TypePiece::Roi:
+        return (plateau_->getPieceAt(coordonnees)->getPieceCouleur() == Couleur::Blanc) ? QChar(0x2654) : QChar(0x265A);
+        break;
+    case TypePiece::Tour:
+        return (plateau_->getPieceAt(coordonnees)->getPieceCouleur() == Couleur::Blanc) ? QChar(0x2656) : QChar(0x265C);
+        break;
+    default:
+        return QChar(0);
+        break;
+    }
+}
+
+void MainWindow::updateBoard(){
+    for(int ligne = 1; ligne <= 8; ++ligne){
+        for(int colonne = 1; colonne <= 8; ++colonne){
+            QPushButton* boutton = getButton((ligne - 1)*8+colonne);
+            boutton->setText(QString(getCharButton(boutton)));
+        }
+    }
+}
+
+void MainWindow::highlightArray(QPushButton* button, const std::vector<std::pair<int, int>> &liste){
+    // for(std::pair<int, int> deplacement : liste){
+    //     QPushButton* buttonTemp = getButton({getCoordinate(button).first + deplacement.first, getCoordinate(button).second + deplacement.second});
+    //     if (buttonTemp){
+    //         buttonTemp->setStyleSheet("background-color: #f7f57e;");
+    //         highlights_.push_back({getCoordinate(button).first + deplacement.first, getCoordinate(button).second + deplacement.second});
+    //     }
+    // }
     for(std::pair<int, int> deplacement : liste){
-        getButton({getCoordinate(button).first + deplacement.first, getCoordinate(button).second + deplacement.second})->setStyleSheet("background-color: #f7f57e;");
-        highlights_.push_back({getCoordinate(button).first + deplacement.first, getCoordinate(button).second + deplacement.second});
+        QPushButton* button = getButton(deplacement);
+        button->setStyleSheet("background-color: #f7f57e;");
+        highlights_.push_back(deplacement);
     }
 }
 
@@ -81,20 +129,18 @@ void MainWindow::onButtonClicked(){
     QPushButton *clickedButton = qobject_cast<QPushButton*>(sender());
     if (clickedButton) {
 
-        if (isFirstClick){
-            highlightArray(clickedButton, KnightMovements);
+        if (isFirstClick && plateau_->getPieceAt(getCoordinate(clickedButton))->getPieceType() != TypePiece::Vide){
+            highlightArray(clickedButton, plateau_->getPieceAt(getCoordinate(clickedButton))->getMouvementsPossibles());
             isFirstClick = false;
         }
 
         else {
-             for (std::pair<int, int> coordinates : highlights_){
+            for (std::pair<int, int> coordinates : highlights_){
                 setBoxColor(getButton(coordinates));
-             }
+            }
             highlights_ = {};
             isFirstClick = true;
         }
-
-        // qDebug() << "ligne = " << row ;
-        // qDebug() << "colonne = " << column << endl ;
+        updateBoard();
     }
 }

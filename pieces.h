@@ -3,6 +3,9 @@
 
 #include <utility>
 #include <vector>
+#include <QDebug>
+
+#include <iostream>
 
 enum class TypePiece{Vide, Pion, Tour, Cavalier, Fou, Reine, Roi};
 enum class Couleur{Blanc, Noir};
@@ -22,9 +25,13 @@ class Piece
 public:
     Piece(ChessBoard* plateau);
     Piece(TypePiece type, Couleur couleur, std::pair<int, int> coordonnees, ChessBoard* plateau);
-    ~Piece() = default;
+    virtual ~Piece() = default;
 
-    virtual void getMouvementsPossibles(){};
+    TypePiece getPieceType(){return type_;};
+    Couleur getPieceCouleur(){return couleur_;};
+    const std::vector<std::pair<int, int>>& getPrimitives(){return *primitives_;};
+
+    virtual const std::vector<std::pair<int, int>>& getMouvementsPossibles();
     bool movePiece(int ligne, int colonne);
 
 
@@ -34,7 +41,7 @@ protected:
     std::pair<int, int> coordonnees_ = {0, 0};
     ChessBoard* plateau_ = nullptr;
     std::vector<std::pair<int, int>> mouvementsPossibles_{};
-    const std::vector<std::pair<int, int>>* primitives_ = nullptr;
+    const std::vector<std::pair<int, int>>* primitives_ = {};
 };
 
 
@@ -43,6 +50,7 @@ class Roi : virtual public Piece
 public:
     Roi(Couleur couleur, std::pair<int, int> coordonnees, ChessBoard* plateau);
     ~Roi() = default;
+    //const std::vector<std::pair<int, int>>& getMouvementsPossibles() override;
 
     // Autres méthodes spécifiques au Roi si nécessaire
 };
@@ -70,6 +78,7 @@ class Cavalier : virtual public Piece
 public:
     Cavalier(Couleur couleur, std::pair<int, int> coordonnees, ChessBoard* plateau);
     ~Cavalier() = default;
+    //const std::vector<std::pair<int, int>>& getMouvementsPossibles() override;
 
     // Autres méthodes spécifiques au Cavalier si nécessaire
 };
@@ -87,7 +96,7 @@ class Pion : virtual public Piece
 {
 public:
     Pion(Couleur couleur, std::pair<int, int> coordonnees, ChessBoard* plateau);
-    void getMouvementsPossibles() override;
+    const std::vector<std::pair<int, int>>& getMouvementsPossibles() override;
     ~Pion() = default;
 
 private:
