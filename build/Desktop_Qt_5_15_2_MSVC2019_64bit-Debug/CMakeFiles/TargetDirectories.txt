@@ -1,0 +1,8 @@
+C:/Users/Omar/Documents/Chess/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Debug/CMakeFiles/Chess.dir
+C:/Users/Omar/Documents/Chess/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Debug/CMakeFiles/edit_cache.dir
+C:/Users/Omar/Documents/Chess/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Debug/CMakeFiles/rebuild_cache.dir
+C:/Users/Omar/Documents/Chess/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Debug/CMakeFiles/list_install_components.dir
+C:/Users/Omar/Documents/Chess/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Debug/CMakeFiles/install.dir
+C:/Users/Omar/Documents/Chess/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Debug/CMakeFiles/install/local.dir
+C:/Users/Omar/Documents/Chess/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Debug/CMakeFiles/Chess_autogen_timestamp_deps.dir
+C:/Users/Omar/Documents/Chess/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Debug/CMakeFiles/Chess_autogen.dir
