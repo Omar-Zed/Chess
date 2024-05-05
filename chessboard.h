@@ -11,14 +11,15 @@ public:
     void debugChessBoard();
 
     Piece* const getPieceAt(std::pair<int, int> coordonnees) const {return plateau_[coordonnees.first][coordonnees.second];};
+    bool moveTo(std::pair<int, int> coordonneesDepart, std::pair<int, int> coordonneesDestination);
 private:
     Piece* plateau_[8][8] = {};
-    bool isWhiteCheck = false;
-    bool isBlackChecl = false;
-    std::vector<std::pair<int, int>> mouvementsPossibleBlanc {};
-    std::vector<std::pair<int, int>> mouvementsPossibleNoir {};
-    std::vector<TypePiece> piecesCaptureesBlanc {};
-    std::vector<TypePiece> piecesCaptureesNoir{};
+    bool isWhiteCheck_ = false;
+    bool isBlackChecl_ = false;
+    std::vector<std::pair<int, int>> mouvementsPossibleBlanc_ {};
+    std::vector<std::pair<int, int>> mouvementsPossibleNoir_ {};
+    std::vector<TypePiece> piecesCaptureesBlanc_ {};
+    std::vector<TypePiece> piecesCaptureesNoir_ {};
 };
 
 #endif // CHESSBOARD_H

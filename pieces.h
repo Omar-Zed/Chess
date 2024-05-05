@@ -32,7 +32,7 @@ public:
     const std::vector<std::pair<int, int>>& getPrimitives(){return *primitives_;};
 
     virtual const std::vector<std::pair<int, int>>& getMouvementsPossibles();
-    bool movePiece(int ligne, int colonne);
+    virtual void movePiece(std::pair<int, int> coordonnees);
 
 
 protected:
@@ -97,6 +97,7 @@ class Pion : virtual public Piece
 public:
     Pion(Couleur couleur, std::pair<int, int> coordonnees, ChessBoard* plateau);
     const std::vector<std::pair<int, int>>& getMouvementsPossibles() override;
+    void movePiece(std::pair<int, int> coordonnees) override;
     ~Pion() = default;
 
 private:

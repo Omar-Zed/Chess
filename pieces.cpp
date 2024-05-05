@@ -11,6 +11,17 @@ Piece::Piece(TypePiece type, Couleur couleur, std::pair<int, int> coordonnees, C
 
 }
 
+void Piece::movePiece(std::pair<int, int> coordonnees){
+    coordonnees_ = coordonnees;
+    getMouvementsPossibles();
+}
+
+void Pion::movePiece(std::pair<int, int> coordonnees){
+    coordonnees_ = coordonnees;
+    getMouvementsPossibles();
+    isFistMove = false;
+}
+
 const std::vector<std::pair<int, int>>& Piece::getMouvementsPossibles(){
     mouvementsPossibles_ = {};
     if (type_ == TypePiece::Vide){

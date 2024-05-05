@@ -33,6 +33,7 @@ private:
     ChessBoard* plateau_ = nullptr;
     bool isFirstClick = true;
     std::vector<std::pair<int, int>> highlights_;
+    QPushButton* lastPushedButton = nullptr;
 
 };
 #endif // MAINWINDOW_H

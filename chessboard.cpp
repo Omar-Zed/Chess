@@ -1,4 +1,5 @@
 #include "chessboard.h"
+#include <algorithm>
 
 ChessBoard::ChessBoard() {
     // plateau_[0][0] = new Tour(Couleur::Noir, {0, 0}, this);
@@ -98,4 +99,25 @@ void ChessBoard::debugChessBoard(){
             }
         }
     }
+}
+
+bool ChessBoard::moveTo(std::pair<int, int> coordonneesDepart, std::pair<int, int> coordonneesDestination){
+    Piece* pieceDepart = getPieceAt(coordonneesDepart);
+    Piece* pieceArrivee= getPieceAt(coordonneesDestination);
+    auto mouvementsPossibles = pieceDepart->getMouvementsPossibles();
+    auto it = std::find_if(mouvementsPossibles.begin(), mouvementsPossibles.end(), [&](std::pair<int, int> pair){return (pair.first == coordonneesDestination.first) && (pair.second == coordonneesDestination.second);});
+    if (it != mouvementsPossibles.end()){
+        // existe
+        if (pieceArrivee->getPieceType() != TypePiece::Vide){
+            pieceArrivee->getPieceCouleur() == Couleur::Blanc ? piecesCaptureesBlanc_.push_back(pieceArrivee->getPieceType()) : piecesCaptureesNoir_.push_back(pieceArrivee->getPieceType());
+        }
+        // equipe diff
+        delete plateau_[coordonneesDestination.first][coordonneesDestination.second];
+        plateau_[coordonneesDestination.first][coordonneesDestination.second] = pieceDepart;
+        plateau_[coordonneesDepart.first][coordonneesDepart.second] = nullptr;
+        plateau_[coordonneesDepart.first][coordonneesDepart.second] = new Piece(this);
+        pieceDepart->movePiece(coordonneesDestination);
+        return true;
+    }
+    return false;
 }

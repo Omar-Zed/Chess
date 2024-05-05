@@ -132,14 +132,19 @@ void MainWindow::onButtonClicked(){
         if (isFirstClick && plateau_->getPieceAt(getCoordinate(clickedButton))->getPieceType() != TypePiece::Vide){
             highlightArray(clickedButton, plateau_->getPieceAt(getCoordinate(clickedButton))->getMouvementsPossibles());
             isFirstClick = false;
+            lastPushedButton = clickedButton;
         }
 
         else {
-            for (std::pair<int, int> coordinates : highlights_){
-                setBoxColor(getButton(coordinates));
+            if (lastPushedButton){
+                plateau_->moveTo(getCoordinate(lastPushedButton), getCoordinate(clickedButton));
+                for (std::pair<int, int> coordinates : highlights_){
+                    setBoxColor(getButton(coordinates));
+                }
+                highlights_ = {};
+                isFirstClick = true;
+                lastPushedButton = nullptr;
             }
-            highlights_ = {};
-            isFirstClick = true;
         }
         updateBoard();
     }
