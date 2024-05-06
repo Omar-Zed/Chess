@@ -128,8 +128,10 @@ void MainWindow::highlightArray(QPushButton* button, const std::vector<std::pair
 void MainWindow::onButtonClicked(){
     QPushButton *clickedButton = qobject_cast<QPushButton*>(sender());
     if (clickedButton) {
-
-        if (isFirstClick && plateau_->getPieceAt(getCoordinate(clickedButton))->getPieceType() != TypePiece::Vide){
+        Piece* pieceCliquee = plateau_->getPieceAt(getCoordinate(clickedButton));
+        if (isFirstClick && pieceCliquee->getPieceType() != TypePiece::Vide && pieceCliquee->getPieceCouleur() == plateau_->getCurrentPlayer()){
+            std::vector<std::pair<int, int>> mouvements = plateau_->getPossibleMoves(pieceCliquee->getPieceCouleur());
+            debugVectorPos(mouvements);
             highlightArray(clickedButton, plateau_->getPieceAt(getCoordinate(clickedButton))->getMouvementsPossibles());
             isFirstClick = false;
             lastPushedButton = clickedButton;

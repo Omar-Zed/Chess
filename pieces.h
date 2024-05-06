@@ -4,6 +4,7 @@
 #include <utility>
 #include <vector>
 #include <QDebug>
+#include <set>
 
 #include <iostream>
 
@@ -17,6 +18,8 @@ const std::vector<std::pair<int, int>> KnightMovements = {{-2, -1}, {-2, 1}, {-1
 const std::vector<std::pair<int, int>> BishopMovements = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
 const std::vector<std::pair<int, int>> PawnMovements = {{1, 0}};
 
+
+void debugVectorPos(std::vector<std::pair<int, int>>& vecteur);
 
 class ChessBoard;
 
@@ -41,16 +44,15 @@ protected:
     std::pair<int, int> coordonnees_ = {0, 0};
     ChessBoard* plateau_ = nullptr;
     std::vector<std::pair<int, int>> mouvementsPossibles_{};
-    const std::vector<std::pair<int, int>>* primitives_ = {};
-};
-
+    const std::vector<std::pair<int, int>>* primitives_ = {};};
 
 class Roi : virtual public Piece
 {
 public:
     Roi(Couleur couleur, std::pair<int, int> coordonnees, ChessBoard* plateau);
     ~Roi() = default;
-    //const std::vector<std::pair<int, int>>& getMouvementsPossibles() override;
+    const std::vector<std::pair<int, int>>& getMouvementsPossibles() override;
+    void movePiece(std::pair<int, int> coordonnees) override;
 
     // Autres méthodes spécifiques au Roi si nécessaire
 };
@@ -78,7 +80,7 @@ class Cavalier : virtual public Piece
 public:
     Cavalier(Couleur couleur, std::pair<int, int> coordonnees, ChessBoard* plateau);
     ~Cavalier() = default;
-    //const std::vector<std::pair<int, int>>& getMouvementsPossibles() override;
+    const std::vector<std::pair<int, int>>& getMouvementsPossibles() override;
 
     // Autres méthodes spécifiques au Cavalier si nécessaire
 };
@@ -98,6 +100,7 @@ public:
     Pion(Couleur couleur, std::pair<int, int> coordonnees, ChessBoard* plateau);
     const std::vector<std::pair<int, int>>& getMouvementsPossibles() override;
     void movePiece(std::pair<int, int> coordonnees) override;
+    void movePieceTest(std::pair<int, int> coordonnees);
     ~Pion() = default;
 
 private:

@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     ChessBoard plateau1;
     MainWindow w(nullptr, &plateau1);
 
-    plateau1.debugChessBoard();
+    // plateau1.debugChessBoard();
     w.resetBoard();
 
     w.show();
