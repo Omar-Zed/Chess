@@ -31,32 +31,54 @@ ChessBoard::ChessBoard() {
     for (int colonne = 0; colonne < 8; colonne++) {
         plateau_[6][colonne] = new Pion(Couleur::Blanc, {6, colonne}, this);
     }
+}
 
-    // for (int ligne = 0; ligne < 8; ligne++){
-    //     for (int colonne = 0; colonne < 8; colonne++){
-    //         plateau_[ligne][colonne] = new Piece(this);
-    //     }
-    // }
-    // delete plateau_[3][5];
-    // plateau_[3][5] = new Pion(Couleur::Noir, {3, 5}, this);
+ChessBoard::~ChessBoard(){
+    for (int ligne = 0; ligne < 8; ligne++){
+        for (int colonne = 0; colonne < 8; colonne++){
+            delete plateau_[ligne][colonne];
+        }
+    }
+}
 
-    // delete plateau_[4][4];
-    // plateau_[4][4] = new Pion(Couleur::Blanc, {4, 4}, this);
+void ChessBoard::resetChessBoard(){
+    for (int ligne = 0; ligne < 8; ligne++){
+        for (int colonne = 0; colonne < 8; colonne++){
+            delete plateau_[ligne][colonne];
+        }
+    }
 
-    // delete plateau_[4][6];
-    // plateau_[4][6] = new Pion(Couleur::Noir, {4, 6}, this);
+    plateau_[0][0] = new Tour(Couleur::Noir, {0, 0}, this);
+    plateau_[0][1] = new Cavalier(Couleur::Noir, {0, 1}, this);
+    plateau_[0][2] = new Fou(Couleur::Noir, {0, 2}, this);
+    plateau_[0][3] = new Reine(Couleur::Noir, {0, 3}, this);
+    plateau_[0][4] = new Roi(Couleur::Noir, {0, 4}, this);
+    plateau_[0][5] = new Fou(Couleur::Noir, {0, 5}, this);
+    plateau_[0][6] = new Cavalier(Couleur::Noir, {0, 6}, this);
+    plateau_[0][7] = new Tour(Couleur::Noir, {0, 7}, this);
+    for (int colonne = 0; colonne < 8; colonne++) {
+        plateau_[1][colonne] = new Pion(Couleur::Noir, {1, colonne}, this);
+    }
 
-    // delete plateau_[1][2];
-    // plateau_[1][2] = new Pion(Couleur::Noir, {1, 2}, this);
+    for (int ligne = 2; ligne < 6; ligne++) {
+        for (int colonne = 0; colonne < 8; colonne++) {
+            plateau_[ligne][colonne] = new Piece(this);
+        }
+    }
 
-    // delete plateau_[2][3];
-    // plateau_[2][3] = new Pion(Couleur::Blanc, {2, 3}, this);
+    plateau_[7][0] = new Tour(Couleur::Blanc, {7, 0}, this);
+    plateau_[7][1] = new Cavalier(Couleur::Blanc, {7, 1}, this);
+    plateau_[7][2] = new Fou(Couleur::Blanc, {7, 2}, this);
+    plateau_[7][3] = new Reine(Couleur::Blanc, {7, 3}, this);
+    plateau_[7][4] = new Roi(Couleur::Blanc, {7, 4}, this);
+    plateau_[7][5] = new Fou(Couleur::Blanc, {7, 5}, this);
+    plateau_[7][6] = new Cavalier(Couleur::Blanc, {7, 6}, this);
+    plateau_[7][7] = new Tour(Couleur::Blanc, {7, 7}, this);
+    for (int colonne = 0; colonne < 8; colonne++) {
+        plateau_[6][colonne] = new Pion(Couleur::Blanc, {6, colonne}, this);
+    }
 
-    // delete plateau_[3][5];
-    // plateau_[3][5] = new Fou(Couleur::Blanc, {3, 5}, this);
 
-    // delete plateau_[3][5];
-    // plateau_[3][5] = new Fou(Couleur::Blanc, {3, 5}, this);
 }
 
 std::string stringPieceType(Piece* piece){
@@ -106,7 +128,8 @@ bool ChessBoard::moveTo(std::pair<int, int> coordonneesDepart, std::pair<int, in
     Piece* pieceArrivee= getPieceAt(coordonneesDestination);
     auto mouvementsPossibles = pieceDepart->getMouvementsPossibles();
     auto it = std::find_if(mouvementsPossibles.begin(), mouvementsPossibles.end(), [&](std::pair<int, int> pair){return (pair.first == coordonneesDestination.first) && (pair.second == coordonneesDestination.second);});
-    if (it != mouvementsPossibles.end() && isLegalMove(coordonneesDepart, coordonneesDestination)){
+    bool roiSafeApresMouvement = isLegalMove(coordonneesDepart, coordonneesDestination);
+    if (it != mouvementsPossibles.end() && roiSafeApresMouvement){
         // existe
         if (pieceArrivee->getPieceType() != TypePiece::Vide){
             pieceArrivee->getPieceCouleur() == Couleur::Blanc ? piecesCaptureesBlanc_.push_back(pieceArrivee->getPieceType()) : piecesCaptureesNoir_.push_back(pieceArrivee->getPieceType());
@@ -172,4 +195,46 @@ std::vector<std::pair<int, int>> ChessBoard::getPossibleMoves(Couleur couleur){
     }
     mouvementsTemp.insert(mouvementsTemp.end(), mouvements.begin(), mouvements.end());
     return mouvementsTemp;
+}
+
+std::pair<int, int> ChessBoard::getPositionRoi(Couleur couleur){
+    for (int ligne = 0; ligne < 8; ligne++){
+        for (int colonne = 0; colonne < 8; colonne++){
+            Piece* piece = getPieceAt({ligne, colonne});
+            if (piece->getPieceType() == TypePiece::Roi && piece->getPieceCouleur() == couleur){
+                return {ligne, colonne};
+            }
+        }
+    }
+    return {0, 0};
+}
+
+bool ChessBoard::isCheck(Couleur couleur){
+    std::vector<std::pair<int, int>> mouvementsPossibleAdverse = getPossibleMoves(couleur == Couleur::Noir ? Couleur::Blanc : Couleur::Noir);
+    auto it = std::find_if(mouvementsPossibleAdverse.begin(), mouvementsPossibleAdverse.end(), [&](std::pair<int, int> mouvement){return mouvement == getPositionRoi(couleur);});
+    if(it != mouvementsPossibleAdverse.end()){
+        return true;
+    }
+    return false;
+}
+
+bool ChessBoard::isCheckMate(Couleur couleur){
+    if (!isCheck(couleur)){
+        return false;
+    }
+    for (int ligne = 0; ligne < 8; ligne++){
+        for (int colonne = 0; colonne < 8; colonne++){
+            Piece* piece = getPieceAt({ligne, colonne});
+            if (piece->getPieceType() != TypePiece::Vide && piece->getPieceCouleur() == couleur){
+                std::vector<std::pair<int, int>> mouvementsPossiblesPiece = piece->getMouvementsPossibles();
+                for (std::pair<int, int> mouvement : mouvementsPossiblesPiece){
+                    if (isLegalMove({ligne, colonne}, mouvement)){
+                        return false; // pas echec et mat
+                        std::cout << "{" << ligne << " ; " << colonne << "}" << std::endl;
+                    }
+                }
+            }
+        }
+    }
+    return true; // aucun mouvement possible pour sauver le roi
 }

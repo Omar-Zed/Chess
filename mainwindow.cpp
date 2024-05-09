@@ -111,13 +111,6 @@ void MainWindow::updateBoard(){
 }
 
 void MainWindow::highlightArray(QPushButton* button, const std::vector<std::pair<int, int>> &liste){
-    // for(std::pair<int, int> deplacement : liste){
-    //     QPushButton* buttonTemp = getButton({getCoordinate(button).first + deplacement.first, getCoordinate(button).second + deplacement.second});
-    //     if (buttonTemp){
-    //         buttonTemp->setStyleSheet("background-color: #f7f57e;");
-    //         highlights_.push_back({getCoordinate(button).first + deplacement.first, getCoordinate(button).second + deplacement.second});
-    //     }
-    // }
     for(std::pair<int, int> deplacement : liste){
         QPushButton* button = getButton(deplacement);
         button->setStyleSheet("background-color: #f7f57e;");
@@ -130,8 +123,6 @@ void MainWindow::onButtonClicked(){
     if (clickedButton) {
         Piece* pieceCliquee = plateau_->getPieceAt(getCoordinate(clickedButton));
         if (isFirstClick && pieceCliquee->getPieceType() != TypePiece::Vide && pieceCliquee->getPieceCouleur() == plateau_->getCurrentPlayer()){
-            std::vector<std::pair<int, int>> mouvements = plateau_->getPossibleMoves(pieceCliquee->getPieceCouleur());
-            debugVectorPos(mouvements);
             highlightArray(clickedButton, plateau_->getPieceAt(getCoordinate(clickedButton))->getMouvementsPossibles());
             isFirstClick = false;
             lastPushedButton = clickedButton;
@@ -147,6 +138,15 @@ void MainWindow::onButtonClicked(){
                 isFirstClick = true;
                 lastPushedButton = nullptr;
             }
+        }
+        if (plateau_->isCheckMate(Couleur::Blanc)){
+            std::cout << "Blanc Echec et Mat" << std::endl;
+            plateau_->resetChessBoard();
+
+        }
+        else if (plateau_->isCheckMate(Couleur::Noir)){
+            std::cout << "Noir Echec et Mat" << std::endl;
+            plateau_->resetChessBoard();
         }
         updateBoard();
     }
