@@ -78,7 +78,9 @@ void ChessBoard::resetChessBoard(){
         plateau_[6][colonne] = new Pion(Couleur::Blanc, {6, colonne}, this);
     }
 
-
+    currentPlayer_ = Couleur::Blanc;
+    piecesCaptureesBlanc_ = {};
+    piecesCaptureesNoir_ = {};
 }
 
 std::string stringPieceType(Piece* piece){
@@ -152,29 +154,22 @@ bool ChessBoard::isLegalMove(std::pair<int, int> coordonneesDepart, std::pair<in
     Piece* pieceDepart = getPieceAt(coordonneesDepart);
     Piece* pieceArrivee= getPieceAt(coordonneesDestination);
     std::vector<std::pair<int, int>> mouvementsAdversaire;
-    auto mouvementsPossibles = pieceDepart->getMouvementsPossibles();
-    auto it = std::find_if(mouvementsPossibles.begin(), mouvementsPossibles.end(), [&](std::pair<int, int> pair){return (pair.first == coordonneesDestination.first) && (pair.second == coordonneesDestination.second);});
-    if (it != mouvementsPossibles.end()){
-        // existe
-        plateau_[coordonneesDestination.first][coordonneesDestination.second] = pieceDepart;
-        plateau_[coordonneesDepart.first][coordonneesDepart.second] = nullptr;
-        plateau_[coordonneesDepart.first][coordonneesDepart.second] = new Piece(this);
+    // existe
+    plateau_[coordonneesDestination.first][coordonneesDestination.second] = pieceDepart;
+    plateau_[coordonneesDepart.first][coordonneesDepart.second] = nullptr;
+    plateau_[coordonneesDepart.first][coordonneesDepart.second] = new Piece(this);
 
-        // pieceDepart->movePiece(coordonneesDestination);
+    mouvementsAdversaire = getPossibleMoves((pieceDepart->getPieceCouleur() == Couleur::Blanc ? Couleur::Noir : Couleur::Blanc));
+    std::pair<int, int> positionRoi = getPositionRoi(pieceDepart->getPieceCouleur());
 
-        mouvementsAdversaire = getPossibleMoves(pieceDepart->getPieceCouleur() == Couleur::Blanc ? Couleur::Noir : Couleur::Blanc);
-        std::pair<int, int> positionRoi = pieceDepart->getPieceCouleur() == Couleur::Blanc ? positionRoiBlanc : positionRoiNoir;
-
-        if(std::find_if(mouvementsAdversaire.begin(), mouvementsAdversaire.end(), [&](std::pair<int, int> pair){return (pair.first == positionRoi.first) && (pair.second == positionRoi.second);}) == mouvementsAdversaire.end()){
-            //roi pas danger
-            isLegal = true;
-        }
-
-        delete plateau_[coordonneesDepart.first][coordonneesDepart.second];
-        plateau_[coordonneesDepart.first][coordonneesDepart.second] = pieceDepart;
-        plateau_[coordonneesDestination.first][coordonneesDestination.second] = pieceArrivee;
-        // pieceDepart->movePiece(coordonneesDepart);
+    if(std::find_if(mouvementsAdversaire.begin(), mouvementsAdversaire.end(), [&](std::pair<int, int> pair){return pair == positionRoi;}) == mouvementsAdversaire.end()){
+        //roi pas danger
+        isLegal = true;
     }
+
+    delete plateau_[coordonneesDepart.first][coordonneesDepart.second];
+    plateau_[coordonneesDepart.first][coordonneesDepart.second] = pieceDepart;
+    plateau_[coordonneesDestination.first][coordonneesDestination.second] = pieceArrivee;
     return isLegal;
 }
 
@@ -185,8 +180,8 @@ std::vector<std::pair<int, int>> ChessBoard::getPossibleMoves(Couleur couleur){
     for (int ligne = 0; ligne < 8; ligne++){
         for (int colonne = 0; colonne < 8; colonne++){
             pieceTemp = plateau_[ligne][colonne];
-            std::vector<std::pair<int, int>> mouvementsPossiblesTemp = pieceTemp->getMouvementsPossibles();
-            if (pieceTemp->getPieceType() != TypePiece::Vide && pieceTemp->getPieceCouleur() == couleur){
+            if (pieceTemp->getPieceType() != TypePiece::Vide && pieceTemp->getPieceType() != TypePiece::Roi && pieceTemp->getPieceCouleur() == couleur){
+                std::vector<std::pair<int, int>> mouvementsPossiblesTemp = pieceTemp->getMouvementsPossibles();
                 for (std::pair<int, int> coordonnee : mouvementsPossiblesTemp){
                     mouvements.insert(coordonnee);
                 }

@@ -107,6 +107,10 @@ public:
     QLabel *label_28;
     QLabel *label_29;
     QLabel *label_30;
+    QLabel *label_6;
+    QLabel *label_7;
+    QLabel *label_11;
+    QPushButton *pushButton;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -724,6 +728,42 @@ public:
 
         gridLayout->addWidget(label_30, 8, 0, 1, 1);
 
+        label_6 = new QLabel(centralwidget);
+        label_6->setObjectName(QString::fromUtf8("label_6"));
+        label_6->setGeometry(QRect(1100, 50, 481, 71));
+        QFont font1;
+        font1.setFamily(QString::fromUtf8("Segoe UI"));
+        font1.setPointSize(34);
+        font1.setBold(true);
+        label_6->setFont(font1);
+        label_6->setAlignment(Qt::AlignCenter);
+        label_6->setWordWrap(true);
+        label_6->setMargin(0);
+        label_7 = new QLabel(centralwidget);
+        label_7->setObjectName(QString::fromUtf8("label_7"));
+        label_7->setGeometry(QRect(1100, 270, 481, 71));
+        QFont font2;
+        font2.setFamily(QString::fromUtf8("Segoe UI"));
+        font2.setPointSize(20);
+        font2.setBold(true);
+        label_7->setFont(font2);
+        label_7->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
+        label_7->setWordWrap(true);
+        label_7->setMargin(0);
+        label_11 = new QLabel(centralwidget);
+        label_11->setObjectName(QString::fromUtf8("label_11"));
+        label_11->setGeometry(QRect(1100, 480, 481, 71));
+        label_11->setFont(font2);
+        label_11->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
+        label_11->setWordWrap(true);
+        label_11->setMargin(0);
+        pushButton = new QPushButton(centralwidget);
+        pushButton->setObjectName(QString::fromUtf8("pushButton"));
+        pushButton->setGeometry(QRect(1100, 780, 441, 101));
+        QFont font3;
+        font3.setPointSize(21);
+        font3.setBold(true);
+        pushButton->setFont(font3);
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
@@ -821,6 +861,10 @@ public:
         label_28->setText(QCoreApplication::translate("MainWindow", "6 ", nullptr));
         label_29->setText(QCoreApplication::translate("MainWindow", "7 ", nullptr));
         label_30->setText(QCoreApplication::translate("MainWindow", "8 ", nullptr));
+        label_6->setText(QString());
+        label_7->setText(QCoreApplication::translate("MainWindow", "Pi\303\250ces Noires Captur\303\251es :", nullptr));
+        label_11->setText(QCoreApplication::translate("MainWindow", "Pi\303\250ces Blanches Captur\303\251es :", nullptr));
+        pushButton->setText(QCoreApplication::translate("MainWindow", "Nouvelle Partie", nullptr));
     } // retranslateUi
 
 };

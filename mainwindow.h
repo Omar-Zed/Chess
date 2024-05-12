@@ -24,8 +24,10 @@ public:
     void highlightArray(QPushButton* button, const std::vector<std::pair<int, int>> &liste);
     std::pair<int, int> getCoordinate(QPushButton *clickedButton);
     QChar getCharButton(QPushButton *button);
+    QChar getCharType(TypePiece type, Couleur couleur);
     void resetBoard();
     void updateBoard();
+    void updateLabel();
     void onButtonClicked();
 
 private:

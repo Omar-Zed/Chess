@@ -69,6 +69,9 @@ void MainWindow::resetBoard(){
             setBoxColor(boutton);
         }
     }
+    QPushButton* boutton = findChild<QPushButton *>("pushButton");
+    connect(boutton, &QPushButton::clicked, this, &MainWindow::onButtonClicked);
+    updateLabel();
 }
 
 QChar MainWindow::getCharButton(QPushButton *button) {
@@ -101,6 +104,35 @@ QChar MainWindow::getCharButton(QPushButton *button) {
     }
 }
 
+QChar MainWindow::getCharType(TypePiece type, Couleur couleur){
+    switch (type) {
+    case TypePiece::Vide:
+        return (couleur == Couleur::Blanc) ? QChar(0) : QChar(0);
+        break;
+    case TypePiece::Cavalier:
+        return (couleur == Couleur::Blanc) ? QChar(0x2658) : QChar(0x265E);
+        break;
+    case TypePiece::Fou:
+        return (couleur == Couleur::Blanc) ? QChar(0x2657) : QChar(0x265D);
+        break;
+    case TypePiece::Pion:
+        return (couleur == Couleur::Blanc) ? QChar(0x2659) : QChar(0x265F);
+        break;
+    case TypePiece::Reine:
+        return (couleur == Couleur::Blanc) ? QChar(0x2655) : QChar(0x265B);
+        break;
+    case TypePiece::Roi:
+        return (couleur == Couleur::Blanc) ? QChar(0x2654) : QChar(0x265A);
+        break;
+    case TypePiece::Tour:
+        return (couleur == Couleur::Blanc) ? QChar(0x2656) : QChar(0x265C);
+        break;
+    default:
+        return QChar(0);
+        break;
+    }
+}
+
 void MainWindow::updateBoard(){
     for(int ligne = 1; ligne <= 8; ++ligne){
         for(int colonne = 1; colonne <= 8; ++colonne){
@@ -108,6 +140,25 @@ void MainWindow::updateBoard(){
             boutton->setText(QString(getCharButton(boutton)));
         }
     }
+}
+
+void MainWindow::updateLabel(){
+    QLabel* labelJoueurEnCours = findChild<QLabel*>("label_6");
+    QLabel* labelPiecesNoiresCapturees = findChild<QLabel*>("label_7");
+    QLabel* labelPiecesBlanchesCapturees = findChild<QLabel*>("label_11");
+    QString piecesCaptureesNoires = "Pieces Noires Capturées : \n";
+    QString piecesCaptureesBlanches= "Pieces Blanches Capturées : \n";
+    if (labelJoueurEnCours){
+        plateau_->getCurrentPlayer() == Couleur::Blanc ? labelJoueurEnCours->setText("Tour Joueur Blanc") : labelJoueurEnCours->setText("Tour Joueur Noir");
+    }
+    for (TypePiece type : plateau_->getPiecesCaptureesBlanc()){
+        piecesCaptureesBlanches += getCharType(type, Couleur::Blanc);
+    }
+    for (TypePiece type : plateau_->getPiecesCaptureesNoir()){
+        piecesCaptureesNoires += getCharType(type, Couleur::Noir);
+    }
+    labelPiecesBlanchesCapturees->setText(piecesCaptureesBlanches);
+    labelPiecesNoiresCapturees->setText(piecesCaptureesNoires);
 }
 
 void MainWindow::highlightArray(QPushButton* button, const std::vector<std::pair<int, int>> &liste){
@@ -121,32 +172,43 @@ void MainWindow::highlightArray(QPushButton* button, const std::vector<std::pair
 void MainWindow::onButtonClicked(){
     QPushButton *clickedButton = qobject_cast<QPushButton*>(sender());
     if (clickedButton) {
-        Piece* pieceCliquee = plateau_->getPieceAt(getCoordinate(clickedButton));
-        if (isFirstClick && pieceCliquee->getPieceType() != TypePiece::Vide && pieceCliquee->getPieceCouleur() == plateau_->getCurrentPlayer()){
-            highlightArray(clickedButton, plateau_->getPieceAt(getCoordinate(clickedButton))->getMouvementsPossibles());
-            isFirstClick = false;
-            lastPushedButton = clickedButton;
+        if (clickedButton->objectName() == QString("pushButton")){
+            //restart
+            plateau_->resetChessBoard();
+            updateLabel();
         }
-
         else {
-            if (lastPushedButton){
-                plateau_->moveTo(getCoordinate(lastPushedButton), getCoordinate(clickedButton));
-                for (std::pair<int, int> coordinates : highlights_){
-                    setBoxColor(getButton(coordinates));
-                }
-                highlights_ = {};
-                isFirstClick = true;
-                lastPushedButton = nullptr;
+            Piece* pieceCliquee = plateau_->getPieceAt(getCoordinate(clickedButton));
+            if (isFirstClick && pieceCliquee->getPieceType() != TypePiece::Vide && pieceCliquee->getPieceCouleur() == plateau_->getCurrentPlayer()){
+                highlightArray(clickedButton, plateau_->getPieceAt(getCoordinate(clickedButton))->getMouvementsPossibles());
+                isFirstClick = false;
+                lastPushedButton = clickedButton;
             }
-        }
-        if (plateau_->isCheckMate(Couleur::Blanc)){
-            std::cout << "Blanc Echec et Mat" << std::endl;
-            plateau_->resetChessBoard();
 
-        }
-        else if (plateau_->isCheckMate(Couleur::Noir)){
-            std::cout << "Noir Echec et Mat" << std::endl;
-            plateau_->resetChessBoard();
+            else {
+                if (lastPushedButton){
+                    plateau_->moveTo(getCoordinate(lastPushedButton), getCoordinate(clickedButton));
+                    for (std::pair<int, int> coordinates : highlights_){
+                        setBoxColor(getButton(coordinates));
+                    }
+                    highlights_ = {};
+                    isFirstClick = true;
+                    lastPushedButton = nullptr;
+                }
+            }
+            updateLabel();
+            if (plateau_->isCheckMate(Couleur::Blanc)){
+                std::cout << "Blanc Echec et Mat" << std::endl;
+                plateau_->resetChessBoard();
+                findChild<QLabel*>("label_6")->setText("Blanc Echec et Mat");
+
+
+            }
+            else if (plateau_->isCheckMate(Couleur::Noir)){
+                std::cout << "Noir Echec et Mat" << std::endl;
+                plateau_->resetChessBoard();
+                findChild<QLabel*>("label_6")->setText("Noir Echec et Mat");
+            }
         }
         updateBoard();
     }

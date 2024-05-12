@@ -19,6 +19,8 @@ public:
     std::pair<int, int> getPositionRoi(Couleur couleur);
     bool isCheck(Couleur couleur);
     bool isCheckMate(Couleur couleur);
+    std::vector<TypePiece> const getPiecesCaptureesBlanc() {return piecesCaptureesBlanc_;};
+    std::vector<TypePiece> const getPiecesCaptureesNoir() {return piecesCaptureesNoir_;};
 
     std::pair<int, int> positionRoiBlanc;
     std::pair<int, int> positionRoiNoir;

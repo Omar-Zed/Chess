@@ -146,6 +146,35 @@ const std::vector<std::pair<int, int>>& Pion::getMouvementsPossibles(){
     return mouvementsPossibles_;
 }
 
+const std::vector<std::pair<int, int>>& Pion::getAllMouvementsPossibles(){
+    mouvementsPossibles_ = {};
+    int direction = (couleur_ == Couleur::Blanc) ? -1 : 1;
+    for (int multiplicateur = 1; multiplicateur <= (isFistMove ? 2 : 1); multiplicateur ++){
+        std::pair<int, int> nouvellesCoordonnees {coordonnees_.first + direction * multiplicateur, coordonnees_.second};
+        if (isInBoard(nouvellesCoordonnees)){
+            if(plateau_->getPieceAt(nouvellesCoordonnees)->getPieceType() == TypePiece::Vide){
+                //case vide
+                mouvementsPossibles_.push_back(nouvellesCoordonnees);
+            }
+        }
+        else{
+            break;
+        }
+    }
+
+    for (int colonne = -1; colonne <= 1; colonne += 2){
+        std::pair<int, int> nouvellesCoordonnees {coordonnees_.first + direction, coordonnees_.second + colonne};
+        if (isInBoard(nouvellesCoordonnees)){
+            if(plateau_->getPieceAt(nouvellesCoordonnees)->getPieceType() == TypePiece::Vide){
+                // piece ennemi
+                mouvementsPossibles_.push_back(nouvellesCoordonnees);
+            }
+        }
+    }
+
+    return mouvementsPossibles_;
+}
+
 const std::vector<std::pair<int, int>>& Cavalier::getMouvementsPossibles(){
     mouvementsPossibles_ = {};
     for (std::pair<int, int> position : *primitives_){
@@ -167,6 +196,17 @@ const std::vector<std::pair<int, int>>& Cavalier::getMouvementsPossibles(){
 }
 
 const std::vector<std::pair<int, int>>& Roi::getMouvementsPossibles(){
+    std::vector<std::pair<int, int>> mouvementsAdverses = plateau_->getPossibleMoves(couleur_ == Couleur::Blanc ? Couleur::Noir : Couleur::Blanc);
     mouvementsPossibles_ = {};
+    for (const std::pair<int, int> mouvement : *primitives_){
+        std::pair<int, int> nouvellesCoordonnees = {coordonnees_.first + mouvement.first, coordonnees_.second + mouvement.second};
+        if (isInBoard(nouvellesCoordonnees)){
+            if ((plateau_->getPieceAt(nouvellesCoordonnees)->getPieceType() == TypePiece::Vide) || ((plateau_->getPieceAt(nouvellesCoordonnees)->getPieceType() != TypePiece::Vide) && (plateau_->getPieceAt(nouvellesCoordonnees)->getPieceCouleur() != couleur_))){
+                if (plateau_->isLegalMove(coordonnees_, nouvellesCoordonnees)){
+                    mouvementsPossibles_.push_back(nouvellesCoordonnees);
+                }
+            }
+        }
+    }
     return mouvementsPossibles_;
 }
